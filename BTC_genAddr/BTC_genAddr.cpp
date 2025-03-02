@@ -2069,16 +2069,16 @@ Point Bitcoin::privToPubkey(char* p_hex)
 	Int priv; 
 	priv.SetBase16(priv_hex); 
 	 
-	Secp256K1*	hiiu_secp = new Secp256K1();   
-	hiiu_secp->Init();	
+	Secp256K1*	secp = new Secp256K1();   
+	secp->Init();	
 
-	Point pubKey = hiiu_secp->ComputePublicKey(&priv); //
+	Point pubKey = secp->ComputePublicKey(&priv); //
 
-	delete hiiu_secp;
+	delete secp;
 
 	return pubKey;
 }
-
+ 
 //--------------------------------------------------------------------
  void Bitcoin::privToHash160(int type, char* p_hex, uint32_t* _hash160, bool isCompressed)
  {
@@ -2088,10 +2088,10 @@ Point Bitcoin::privToPubkey(char* p_hex)
 	Int priv; 
 	priv.SetBase16(priv_hex); 
 	
-	Secp256K1*	hiiu_secp = new Secp256K1();   
-	hiiu_secp->Init();	
+	Secp256K1*	secp = new Secp256K1();   
+	secp->Init();	
 
-	Point pubKey = hiiu_secp->ComputePublicKey(&priv); //
+	Point pubKey = secp->ComputePublicKey(&priv); //
 
 	unsigned char address[25];
 
@@ -2106,7 +2106,7 @@ Point Bitcoin::privToPubkey(char* p_hex)
 			break;
 	}
 
-	hiiu_secp->GetHash160(type, isCompressed, pubKey, address + 1);
+	secp->GetHash160(type, isCompressed, pubKey, address + 1);
 	
 	//print 
 	printf("\n hash160 : ");	
@@ -2121,7 +2121,7 @@ Point Bitcoin::privToPubkey(char* p_hex)
 	memcpy(_hash160 + 3, address + 13, 4);
 	memcpy(_hash160 + 4, address + 17, 4);
 
-	delete hiiu_secp;
+	delete secp;
  }
 
 //--------------------------------------------------------------------
@@ -2133,10 +2133,10 @@ std::string Bitcoin::privToAddr(int type, char* p_hex, bool isCompressed)
 	Int priv; 
 	priv.SetBase16(priv_hex); 
 	
-	Secp256K1*	hiiu_secp = new Secp256K1();   
-	hiiu_secp->Init();	
+	Secp256K1*	secp = new Secp256K1();   
+	secp->Init();	
 
-	Point pubKey = hiiu_secp->ComputePublicKey(&priv); //
+	Point pubKey = secp->ComputePublicKey(&priv); //
 
 	unsigned char address[25];
 
@@ -2150,27 +2150,27 @@ std::string Bitcoin::privToAddr(int type, char* p_hex, bool isCompressed)
 			break;	
 		case BECH32:
 			if (!isCompressed) {	return " BECH32: Only compressed key ";	}
-			hiiu_secp->GetHash160(type, isCompressed, pubKey, address + 1);
+			secp->GetHash160(type, isCompressed, pubKey, address + 1);
 
 			char addr_bech32[128];
 			segwit_addr_encode(addr_bech32, "bc", 0, address + 1, 20);
 			return std::string(addr_bech32); 
 	}
 
-	hiiu_secp->GetHash160(type, isCompressed, pubKey, address + 1);	
+	secp->GetHash160(type, isCompressed, pubKey, address + 1);	
 
 	sha256_checksum(address, 21, address + 21);
 
 	std::string addr = EncodeBase58(address, address + 25);
 
-	delete hiiu_secp;
+	delete secp;
 	return addr;
  }
 //--------------------------------------------------------------------
 void Bitcoin::pubkeyToHash160(int type, Point& pubKey, uint32_t* _hash160,  bool isCompressed)
 {
-	Secp256K1* hiiu_secp = new Secp256K1();   
-	hiiu_secp->Init();	
+	Secp256K1* secp = new Secp256K1();   
+	secp->Init();	
 	
 	unsigned char address[25];
 
@@ -2185,7 +2185,7 @@ void Bitcoin::pubkeyToHash160(int type, Point& pubKey, uint32_t* _hash160,  bool
 			break;
 	}
 
-	hiiu_secp->GetHash160(type, isCompressed, pubKey, address + 1);
+	secp->GetHash160(type, isCompressed, pubKey, address + 1);
 	
 	//print 
 	printf("\n hash160 : ");
@@ -2200,13 +2200,13 @@ void Bitcoin::pubkeyToHash160(int type, Point& pubKey, uint32_t* _hash160,  bool
 	memcpy(_hash160 + 3, address + 13, 4);
 	memcpy(_hash160 + 4, address + 17, 4);
 
-	delete hiiu_secp;
+	delete secp;
 } 
 //--------------------------------------------------------------------
 std::string Bitcoin::pubkeyToAddr(int type, Point& pubKey, bool isCompressed)
 {
-	Secp256K1*	hiiu_secp = new Secp256K1();   
-	hiiu_secp->Init();	
+	Secp256K1*	secp = new Secp256K1();   
+	secp->Init();	
 	
 	unsigned char address[25];
 
@@ -2220,20 +2220,20 @@ std::string Bitcoin::pubkeyToAddr(int type, Point& pubKey, bool isCompressed)
 			break;			
 		case BECH32:
 			if (!isCompressed) {	return " BECH32: Only compressed key ";	}
-			hiiu_secp->GetHash160(type, isCompressed, pubKey, address + 1);
+			secp->GetHash160(type, isCompressed, pubKey, address + 1);
 
 			char addr_bech32[128];
 			segwit_addr_encode(addr_bech32, "bc", 0, address + 1, 20);
 			return std::string(addr_bech32);
 	}
 
-	hiiu_secp->GetHash160(type, isCompressed, pubKey, address + 1);	
+	secp->GetHash160(type, isCompressed, pubKey, address + 1);	
 
 	sha256_checksum(address, 21, address + 21);
 
 	std::string addr = EncodeBase58(address, address + 25);
 
-	delete hiiu_secp;
+	delete secp;
 	return addr;
 
 }
@@ -2242,8 +2242,8 @@ std::string Bitcoin::pubkeyToAddr(int type, Point& pubKey, bool isCompressed)
 // std::string Bitcoin::hash160ToAddr(uint32_t* _hash160, bool isCompressed){
 // 	// _hash160[] = 1784337440; 1882531190; -1293883124; -1810242794; -1514644173;
 // 	// 	h[0]      = 1784337440; 1882531190;  3001084172;  2484724502;  2780323123 ;
-// 	Secp256K1* hiiu_secp = new Secp256K1();   
-// 	hiiu_secp->Init();	
+// 	Secp256K1* secp = new Secp256K1();   
+// 	secp->Init();	
 
 // 	unsigned char address[25];
 // 	address[0] = 0x00;
@@ -2251,7 +2251,7 @@ std::string Bitcoin::pubkeyToAddr(int type, Point& pubKey, bool isCompressed)
 // 	sha256_checksum(address, 21, address + 21);
 // 	std::string addr = EncodeBase58(address, address + 25);
 
-// 	delete hiiu_secp;
+// 	delete secp;
 // 	return addr;
 	
 // }
@@ -2260,8 +2260,8 @@ std::string Bitcoin::hash160ToAddr(int type, uint32_t* _hash160, bool isCompress
 	// _hash160[] = 1784337440; 1882531190; -1293883124; -1810242794; -1514644173;
 	// 	h[0]      = 1784337440; 1882531190;  3001084172;  2484724502;  2780323123 ;
 
-	Secp256K1* hiiu_secp = new Secp256K1();   
-	hiiu_secp->Init();	
+	Secp256K1* secp = new Secp256K1();   
+	secp->Init();	
 
 	unsigned char address[25];
 	// address[0] = 0x00;
@@ -2288,7 +2288,7 @@ std::string Bitcoin::hash160ToAddr(int type, uint32_t* _hash160, bool isCompress
 	sha256_checksum(address, 21, address + 21);
 	std::string addr = EncodeBase58(address, address + 25);
 
-	delete hiiu_secp;
+	delete secp;
 	return addr;
 }
 //============== HIIU::BITCOIN - end =============================================================================

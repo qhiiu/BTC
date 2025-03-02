@@ -225,7 +225,7 @@ void hiiu_decodeBech32(const char* addr,  uint32_t* _hash160) {
   size_t witdata_len;
   int witver;
 
-  // Giải mã địa chỉ SegWit thành hash160
+  // Giải mã địa chỉ SegWit thành hash160 
   segwit_addr_decode(&witver, hash, &witdata_len, "bc", addr);
     
 	// 20 bytes --> uint32_t _hash160[5]

@@ -8,7 +8,7 @@
 #include <cassert>
 #include <signal.h>
 #include <unistd.h>
-#include <iostream>
+#include <iostream> 
 #include <cstdint>
 #include <fstream>
 #include <map>
@@ -225,7 +225,7 @@ void run(){
     n_BECH32 = 0;
 
     ifstream fileData(name_file_data); 
-    string addrLine;
+    string addrLine; 
 
     if (fileData.is_open()) {
         while (getline(fileData, addrLine)) {
